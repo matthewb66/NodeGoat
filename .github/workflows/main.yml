@@ -22,31 +22,32 @@ jobs:
         cache: 'npm'
     - run: npm install
     
-    # Runs a Black Duck rapid scan on pull requests
+#     # Runs a Black Duck rapid scan on pull requests
     - name: Run RAPID Black Duck security scan
- #     if: ${{github.event_name == 'pull_request'}}
-      uses: jcroall/blackduck-scan-action@v3
-      continue-on-error: true
+#  #     if: ${{github.event_name == 'pull_request'}}
+#       uses: matthewb66/blackduck-scan-action@v2
+#       continue-on-error: true
+#       with:
+#         url: ${{ secrets.BLACKDUCK_URL }}
+#         token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+#         mode: rapid
+#         output: blackduck-output
+          
+    # Runs special workflow steps for pull requests
+    - name: Run RAPID Black Duck security scan
+#       if: ${{github.event_name == 'pull_request'}}
+      uses: matthewb66/blackduck-workflow-action@v2
       with:
         url: ${{ secrets.BLACKDUCK_URL }}
         token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-        mode: rapid
+        fixpr: true
+        comment: true
+        upgrade_major: true
+        upgrade_indirect: true
         output: blackduck-output
-          
-    # Runs special workflow steps for pull requests
- #   - name: Run Black Duck Advanced Workflow
- #     if: ${{github.event_name == 'pull_request'}}
- #     uses: jcroall/blackduck-workflow-action@1
- #     with:
- #       url: ${{ secrets.BLACKDUCK_URL }}
- #       token: ${{ secrets.BLACKDUCK_API_TOKEN }}
- #       fixpr: true
- #       comment: false
- #       upgrademajor: true
- #       input: blackduck-output
- #       sarif: blackduck-sarif.json
- #     env:
- #       GITHUB_TOKEN: ${{ github.token }}
+        sarif: blackduck-sarif.json
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
           
     - name: Upload SARIF file
  #     if: ${{github.event_name == 'pull_request'}}
